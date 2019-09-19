@@ -47,11 +47,13 @@ class WP_Job_Manager_Ajax {
 
 		// JM Ajax endpoints.
 		add_action( 'job_manager_ajax_get_listings', array( $this, 'get_listings' ) );
+		add_action( 'job_manager_ajax_get_company_data', array( $this, 'get_company_data' ) );
 		add_action( 'job_manager_ajax_upload_file', array( $this, 'upload_file' ) );
 
 		// BW compatible handlers.
 		add_action( 'wp_ajax_nopriv_job_manager_get_listings', array( $this, 'get_listings' ) );
 		add_action( 'wp_ajax_job_manager_get_listings', array( $this, 'get_listings' ) );
+		add_action( 'wp_ajax_job_manager_get_company_data', array( $this, 'get_company_data' ) );
 		add_action( 'wp_ajax_nopriv_job_manager_upload_file', array( $this, 'upload_file' ) );
 		add_action( 'wp_ajax_job_manager_upload_file', array( $this, 'upload_file' ) );
 		add_action( 'wp_ajax_job_manager_search_users', array( $this, 'ajax_search_users' ) );
@@ -271,6 +273,29 @@ class WP_Job_Manager_Ajax {
 
 		/** This filter is documented in includes/class-wp-job-manager-ajax.php (above) */
 		wp_send_json( apply_filters( 'job_manager_get_listings_result', $result, $jobs ) );
+	}
+
+	/**
+	 * Returns company data for Ajax endpoint
+	 *
+	 * No nonce field since the form may be statically cached.
+	 */
+	public function get_company_data() {
+		error_log("get_company_data()");
+		if( !wpjm_category_as_company_enabled() ) {
+			wp_send_json_error( __( 'Categories as Companies not enabled in WPJM settings.', 'wp-job-manager' ) );
+			return;
+		}
+
+		$category = isset( $_REQUEST['category'][0] ) ? sanitize_text_field( wp_unslash( $_REQUEST['category'][0] ) ) : '';
+
+		$term = get_term($category);
+		
+		$result = wpjm_job_listing_category_get_company_data($term);
+
+		error_log("get_company_data() result " . print_r($result, true));
+
+		wp_send_json( $result );
 	}
 
 	/**

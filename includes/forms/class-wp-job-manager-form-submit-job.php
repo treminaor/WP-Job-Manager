@@ -466,6 +466,8 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 		wp_enqueue_script( 'wp-job-manager-job-submission' );
 		wp_enqueue_style( 'wp-job-manager-job-submission', JOB_MANAGER_PLUGIN_URL . '/assets/css/job-submission.css', array(), JOB_MANAGER_VERSION );
 
+		wp_enqueue_script( 'wp-job-manager-company-data' );
+		
 		// Register datepicker JS. It will be enqueued if needed when a date.
 		// field is rendered.
 		wp_register_script( 'wp-job-manager-datepicker', JOB_MANAGER_PLUGIN_URL . '/assets/js/datepicker.min.js', array( 'jquery', 'jquery-ui-datepicker' ), JOB_MANAGER_VERSION, true );

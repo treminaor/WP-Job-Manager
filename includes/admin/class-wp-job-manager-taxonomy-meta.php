@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles taxonomy meta custom fields. Just used for job type.
+ * Handles taxonomy meta custom fields. Just used for job type and category.
  *
  * @since 1.28.0
  */
@@ -41,6 +41,14 @@ class WP_Job_Manager_Taxonomy_Meta {
 	 * WP_Job_Manager_Taxonomy_Meta constructor.
 	 */
 	public function __construct() {
+		//@todo replace with a custom option to enable this functionality
+		if ( wpjm_category_as_company_enabled() ) {
+			add_action( 'job_listing_category_edit_form_fields', array( $this, 'display_schema_org_category_fields' ), 10, 2 );
+			add_action( 'job_listing_category_add_form_fields', array( $this, 'add_form_display_schema_org_company_fields' ), 10 );
+			add_action( 'edited_job_listing_category', array( $this, 'set_schema_org_category_fields' ), 10, 2 );
+			add_action( 'created_job_listing_category', array( $this, 'set_schema_org_category_fields' ), 10, 2 );
+		}
+
 		if ( wpjm_job_listing_employment_type_enabled() ) {
 			add_action( 'job_listing_type_edit_form_fields', array( $this, 'display_schema_org_employment_type_field' ), 10, 2 );
 			add_action( 'job_listing_type_add_form_fields', array( $this, 'add_form_display_schema_org_employment_type_field' ), 10 );
@@ -49,6 +57,26 @@ class WP_Job_Manager_Taxonomy_Meta {
 			add_filter( 'manage_edit-job_listing_type_columns', array( $this, 'add_employment_type_column' ) );
 			add_filter( 'manage_job_listing_type_custom_column', array( $this, 'add_employment_type_column_content' ), 10, 3 );
 			add_filter( 'manage_edit-job_listing_type_sortable_columns', array( $this, 'add_employment_type_column_sortable' ) );
+		}
+	}
+
+	/**
+	 * Set the category fields when creating/updating a category type item.
+	 *
+	 * @param int $term_id Term ID.
+	 * @param int $tt_id   Taxonomy category ID.
+	 */
+	public function set_schema_org_category_fields( $term_id, $tt_id ) {
+		$fields = wpjm_job_listing_category_options();
+
+		foreach($fields as $field) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce check handled by WP core.
+			$input = isset( $_POST[$field['id']] ) ? sanitize_text_field( wp_unslash( $_POST[$field['id']] ) ) : null;
+			if ( $input ) {
+				update_term_meta( $term_id, $field['id'], sanitize_text_field( wp_unslash( $input ) ) );
+			} elseif ( null !== $input ) {
+				delete_term_meta( $term_id, $field['id'] );
+			}
 		}
 	}
 
@@ -68,6 +96,28 @@ class WP_Job_Manager_Taxonomy_Meta {
 			update_term_meta( $term_id, 'employment_type', sanitize_text_field( wp_unslash( $input_employment_type ) ) );
 		} elseif ( null !== $input_employment_type ) {
 			delete_term_meta( $term_id, 'employment_type' );
+		}
+	}
+
+	/**
+	 * Add the option to select schema.org company fields for job category on the edit meta field form.
+	 *
+	 * @param WP_Term $term     Term object.
+	 * @param string  $taxonomy Taxonomy slug.
+	 */
+	public function display_schema_org_category_fields( $term, $taxonomy ) {
+		$fields = wpjm_job_listing_category_options();
+
+		foreach($fields as $field) {
+			$value = get_term_meta( $term->term_id, $field['id'], true );
+			?>
+			<tr class="form-field term-group-wrap">
+				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['name'], 'wp-job-manager' ); ?></label></th>
+				<td>
+					<input name="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
+				</td>
+			</tr>
+			<?php
 		}
 	}
 
@@ -92,6 +142,25 @@ class WP_Job_Manager_Taxonomy_Meta {
 					<?php endforeach; ?>
 				</select></td>
 			</tr>
+			<?php
+		}
+	}
+
+	/**
+	 * Add the option to select schema.org company fields for job type on the add meta field form.
+	 *
+	 * @param string $taxonomy Taxonomy slug.
+	 */
+	public function add_form_display_schema_org_company_fields( $taxonomy ) {
+		$fields = wpjm_job_listing_category_options();
+
+		foreach($fields as $field) {
+			$value = get_term_meta( $term->term_id, $field['id'], true );
+			?>
+			<div class="form-field term-group">
+			<label for="feature-group"><?php esc_html_e( $field['name'], 'wp-job-manager' ); ?></label>
+			<input name="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="20">
+			</div>
 			<?php
 		}
 	}

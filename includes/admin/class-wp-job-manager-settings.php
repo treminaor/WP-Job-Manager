@@ -166,6 +166,15 @@ class WP_Job_Manager_Settings {
 							'attributes' => array(),
 						),
 						array(
+							'name'       => 'job_manager_enable_categories_as_companies',
+							'std'        => '0',
+							'label'      => __( 'Categories as Companies', 'wp-job-manager' ),
+							'cb_label'   => __( 'Enable company information to be stored inside categories.', 'wp-job-manager' ),
+							'desc'       => __( 'If categories are already enabled, this option enables categories to store company information. Any job listing assigned to a category which contains company information will have that information auto-filled when adding a job listing for that company.', 'wp-job-manager' ),
+							'type'       => 'checkbox',
+							'attributes' => array(),
+						),
+						array(
 							'name'       => 'job_manager_enable_default_category_multiselect',
 							'std'        => '0',
 							'label'      => __( 'Multi-select Categories', 'wp-job-manager' ),

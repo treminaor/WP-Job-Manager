@@ -211,7 +211,26 @@ class WP_Job_Manager_Post_Types {
 
 					)
 				)
-			);
+			); 
+
+			if ( wpjm_category_as_company_enabled() ) {
+				$fields = wpjm_job_listing_category_options();
+
+				foreach($fields as $field) {
+					register_meta(
+						'term',
+						$field['id'],
+						array(
+							'object_subtype'    => 'job_listing_category',
+							'show_in_rest'      => true,
+							'type'              => 'string',
+							'single'            => true,
+							'description'       => esc_html__( $field['name'], 'wp-job-manager' ),
+							'sanitize_callback' => (isset($field['callback']) ? array( $this, $field['callback'] ) : ''),
+						)
+					);
+				}
+			}
 		}
 
 		if ( get_option( 'job_manager_enable_types' ) ) {

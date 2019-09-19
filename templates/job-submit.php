@@ -52,6 +52,11 @@ global $job_manager;
 		<!-- Company Information Fields -->
 		<?php if ( $company_fields ) : ?>
 			<h2><?php esc_html_e( 'Company Details', 'wp-job-manager' ); ?></h2>
+			<?php 
+			if( wpjm_category_as_company_enabled() ) {
+				echo wp_kses_post( '<small>These fields will be auto-filled if you choose a company from the Job Category list.</small>' );
+			} 
+			?>
 
 			<?php do_action( 'submit_job_form_company_fields_start' ); ?>
 

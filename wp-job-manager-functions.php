@@ -875,6 +875,100 @@ function wpjm_use_standard_password_setup_email() {
 }
 
 /**
+ * Checks if enable categories as companies option is enabled. If categories themselves are not enabled then the setting is ignored.
+ *
+ * @since 1.31.1
+ *
+ * @return bool
+ */
+function wpjm_category_as_company_enabled() {
+	if( get_option( 'job_manager_enable_categories' ) ) {
+		if( get_option( 'job_manager_enable_categories_as_companies' ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Returns a meta key value for the category
+ *
+ * @since 1.31.1
+ *
+ * @return 
+ */
+function wpjm_job_listing_category_company_meta($key, $post = null) {
+	if( wpjm_category_as_company_enabled() ) {
+		$categories = wpjm_get_the_job_categories($post);
+		if( !empty( $categories ) ) {
+			$primary_category = $categories[0];
+			return wpjm_job_listing_category_get_company_data($primary_category)[$key];
+		}
+	}
+	return false;
+}
+
+/**
+ * Returns an array of meta key values for the category
+ *
+ * @since 1.31.1
+ *
+ * @return array
+ */
+function wpjm_job_listing_category_get_company_data($term) {
+	$fields = wpjm_job_listing_category_options();
+	$data = array();
+
+	foreach($fields as $field) {
+		$data[$field['id']] = get_term_meta( $term->term_id, $field['id'], true );		
+	}
+
+	return $data;
+}
+
+/**
+ * Returns the list of company fields for categories.
+ *
+ * @since 1.31.1
+ *
+ * @return array
+ */
+function wpjm_job_listing_category_options() {
+	$fields = 
+		array(
+			array(
+				'name' 	=> 'Company Name', 
+				'id' 	=> "company_name"
+			),
+			array(
+				'name' 	=> 'Company Tagline', 
+				'id' 	=> "company_tagline"
+			),
+			array(
+				'name' 	=> 'Company Twitter', 
+				'id' 	=> "company_twitter"
+			),
+			array(
+				'name' 	=> 'Company Video', 
+				'id' 	=> "company_video"
+			),
+			array(
+				'name' 	=> 'Company Website', 
+				'id' 	=> "company_website"
+			)
+		);
+
+	/**
+	 * Filter the list of category option fields.
+	 *
+	 * @since 1.28.0
+	 *
+	 * @param array List of employment types { string $key => string $label }.
+	 */
+	return apply_filters( 'wpjm_job_listing_category_options', $fields );
+}
+
+/**
  * Returns the list of employment types from Google's modification of schema.org's employmentType.
  *
  * @since 1.28.0

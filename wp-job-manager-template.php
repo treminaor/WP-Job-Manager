@@ -974,7 +974,14 @@ function get_the_company_video( $post = null ) {
 	if ( ! $post || 'job_listing' !== $post->post_type ) {
 		return null;
 	}
-	return apply_filters( 'the_company_video', $post->_company_video, $post );
+
+	$company_video = $post->_company_video;
+
+	if( wpjm_category_as_company_enabled() ) {
+		$company_video = wpjm_job_listing_category_company_meta('company_video', $post);
+	}
+
+	return apply_filters( 'the_company_video', $company_video, $post );
 }
 
 /**
@@ -1018,7 +1025,12 @@ function get_the_company_name( $post = null ) {
 		return '';
 	}
 
-	return apply_filters( 'the_company_name', $post->_company_name, $post );
+	$name = $post->_company_name;
+	if( wpjm_category_as_company_enabled() ) {
+		$name = wpjm_job_listing_category_company_meta('company_name', $post);
+	}
+
+	return apply_filters( 'the_company_name', $name, $post );
 }
 
 /**
@@ -1035,13 +1047,16 @@ function get_the_company_website( $post = null ) {
 		return;
 	}
 
-	$website = $post->_company_website;
-
-	if ( $website && ! strstr( $website, 'http:' ) && ! strstr( $website, 'https:' ) ) {
-		$website = 'http://' . $website;
+	$company_website = $post->_company_website;
+	if( wpjm_category_as_company_enabled() ) {
+		$company_website = wpjm_job_listing_category_company_meta('company_website', $post);
 	}
 
-	return apply_filters( 'the_company_website', $website, $post );
+	if ( $company_website && ! strstr( $company_website, 'http:' ) && ! strstr( $company_website, 'https:' ) ) {
+		$company_website = 'http://' . $company_website;
+	}
+
+	return apply_filters( 'the_company_website', $company_website, $post );
 }
 
 /**
@@ -1085,7 +1100,13 @@ function get_the_company_tagline( $post = null ) {
 		return null;
 	}
 
-	return apply_filters( 'the_company_tagline', $post->_company_tagline, $post );
+	$company_tagline = $post->_company_tagline;
+
+	if( wpjm_category_as_company_enabled() ) {
+		$company_tagline = wpjm_job_listing_category_company_meta('company_tagline', $post);
+	}
+
+	return apply_filters( 'the_company_tagline', $company_tagline, $post );
 }
 
 /**
@@ -1128,6 +1149,10 @@ function get_the_company_twitter( $post = null ) {
 	}
 
 	$company_twitter = $post->_company_twitter;
+
+	if( wpjm_category_as_company_enabled() ) {
+		$company_twitter = wpjm_job_listing_category_company_meta('company_twitter', $post);
+	}
 
 	if ( 0 === strlen( $company_twitter ) ) {
 		return null;
