@@ -1,8 +1,8 @@
 jQuery(document).ready(function($) {
 	// Listen for changes to the category field 
-	$( '#job_category' ).on( 'select2:select select2:unselect', function() {
+	$( 'body' ).on("change", ".editor-post-taxonomies__hierarchical-terms-input", function(event) {
 		var data = {
-			category: $( '#job_category' ).val(),
+			category: (event.target.id.substr(41, event.target.id.length)),
 		};
 
 		$.ajax( {
@@ -14,13 +14,13 @@ jQuery(document).ready(function($) {
 					try {
 						result.data = data;
 						$.each(result, function(k, v) {
-						    if(v === false) {
-						    	$( '#' + k ).prop("disabled", false);
-						    	$( '#' + k ).val("");
+						    if(!event.target.checked) {
+						    	$( '#_' + k ).prop("disabled", false);
+						    	$( '#_' + k ).val("");
 						    }
 						    else {
-						    	$( '#' + k ).prop("disabled", true); 
-						    	$( '#' + k ).val(v);
+						    	$( '#_' + k ).prop("disabled", true); 
+						    	$( '#_' + k ).val(v);
 						    }
 						});
 						

@@ -87,7 +87,6 @@ class WP_Job_Manager_Admin {
 	 */
 	public function admin_enqueue_scripts() {
 		WP_Job_Manager::register_select2_assets();
-
 		$screen = get_current_screen();
 		if ( in_array( $screen->id, apply_filters( 'job_manager_admin_screen_ids', array( 'edit-job_listing', 'plugins', 'job_listing', 'job_listing_page_job-manager-settings', 'job_listing_page_job-manager-addons' ) ), true ) ) {
 			wp_enqueue_style( 'jquery-ui' );
@@ -96,6 +95,16 @@ class WP_Job_Manager_Admin {
 			wp_register_script( 'jquery-tiptip', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-tiptip/jquery.tipTip.min.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_datepicker_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/datepicker.min.js', array( 'jquery', 'jquery-ui-datepicker' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_admin_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/admin.min.js', array( 'jquery', 'jquery-tiptip', 'select2' ), JOB_MANAGER_VERSION, true );
+			
+			wp_enqueue_script( 'wp-job-manager-company-data-admin', JOB_MANAGER_PLUGIN_URL . '/assets/js/company-data-admin.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
+
+			$ajax_url         = WP_Job_Manager_Ajax::get_endpoint();
+			$ajax_data        = array(
+				'ajax_url'                => $ajax_url,
+			);
+
+			wp_localize_script( 'wp-job-manager-company-data-admin', 'job_manager_ajax_company_data', $ajax_data );
+
 
 			wp_localize_script(
 				'job_manager_admin_js',

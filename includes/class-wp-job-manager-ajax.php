@@ -287,13 +287,12 @@ class WP_Job_Manager_Ajax {
 			return;
 		}
 
-		$category = isset( $_REQUEST['category'][0] ) ? sanitize_text_field( wp_unslash( $_REQUEST['category'][0] ) ) : '';
+		$category = $_REQUEST['category'];
+		if(is_array($_REQUEST['category']))
+			$category = isset( $_REQUEST['category'][0] ) ? sanitize_text_field( wp_unslash( $_REQUEST['category'][0] ) ) : '';
 
 		$term = get_term($category);
-		
 		$result = wpjm_job_listing_category_get_company_data($term);
-
-		error_log("get_company_data() result " . print_r($result, true));
 
 		wp_send_json( $result );
 	}
