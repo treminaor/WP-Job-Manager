@@ -908,6 +908,18 @@ function wpjm_job_listing_category_company_meta($key, $post = null) {
 	return false;
 }
 
+function wpjm_job_listing_category_is_a_company($term) {
+	$data = wpjm_job_listing_category_get_company_data($term);
+	
+	//Check if any meta fields have been filled out for this term
+	foreach($data as $field) {
+		if(!empty($field))
+			return true;
+
+	}
+	return false;
+}
+
 /**
  * Returns an array of meta key values for the category
  *

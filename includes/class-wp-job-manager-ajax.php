@@ -281,15 +281,19 @@ class WP_Job_Manager_Ajax {
 	 * No nonce field since the form may be statically cached.
 	 */
 	public function get_company_data() {
-		error_log("get_company_data()");
-		if( !wpjm_category_as_company_enabled() ) {
+		if ( !wpjm_category_as_company_enabled() ) {
 			wp_send_json_error( __( 'Categories as Companies not enabled in WPJM settings.', 'wp-job-manager' ) );
 			return;
 		}
 
 		$category = $_REQUEST['category'];
-		if(is_array($_REQUEST['category']))
-			$category = isset( $_REQUEST['category'][0] ) ? sanitize_text_field( wp_unslash( $_REQUEST['category'][0] ) ) : '';
+
+		if ( is_array( $_REQUEST['category'] ) ) {
+			foreach($_REQUEST['category'] as $cat_id) {
+				if(wpjm_job_listing_category_is_a_company(get_term($cat_id)))
+					$category = $cat_id;
+			}
+		}
 
 		$term = get_term($category);
 		$result = wpjm_job_listing_category_get_company_data($term);
