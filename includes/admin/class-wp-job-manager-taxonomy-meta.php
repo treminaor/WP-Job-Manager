@@ -68,14 +68,19 @@ class WP_Job_Manager_Taxonomy_Meta {
 	 */
 	public function set_schema_org_category_fields( $term_id, $tt_id ) {
 		$fields = wpjm_job_listing_category_options();
+		
+		if(isset($_POST['current_company_logo'])) {
+			$_POST['company_logo'] = create_attachment_from_url($_POST['current_company_logo'], $term_id, $_POST['company_name'] . ' Logo');
+		}
+		error_log(print_r($_POST, true));
 
 		foreach($fields as $field) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce check handled by WP core.
-			$input = isset( $_POST[$field['id']] ) ? sanitize_text_field( wp_unslash( $_POST[$field['id']] ) ) : null;
+			$input = isset( $_POST[$field['name']] ) ? sanitize_text_field( wp_unslash( $_POST[$field['name']] ) ) : null;
 			if ( $input ) {
-				update_term_meta( $term_id, $field['id'], sanitize_text_field( wp_unslash( $input ) ) );
+				update_term_meta( $term_id, $field['name'], sanitize_text_field( wp_unslash( $input ) ) );
 			} elseif ( null !== $input ) {
-				delete_term_meta( $term_id, $field['id'] );
+				delete_term_meta( $term_id, $field['name'] );
 			}
 		}
 	}
@@ -109,13 +114,28 @@ class WP_Job_Manager_Taxonomy_Meta {
 		$fields = wpjm_job_listing_category_options();
 
 		foreach($fields as $field) {
-			$value = get_term_meta( $term->term_id, $field['id'], true );
+			$value = get_term_meta( $term->term_id, $field['name'], true );
+
 			?>
+			<style>
+				img {
+					max-width: 200px;
+					max-height: 200px;
+				}
+			</style>
 			<tr class="form-field term-group-wrap">
-				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['name'], 'wp-job-manager' ); ?></label></th>
+				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['label'], 'wp-job-manager' ); ?></label></th>
 				<td>
-					<input name="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
-				</td>
+				<?php
+					if($field['type'] == 'file') {
+						$field['value'] = $value;
+						get_job_manager_template( 'form-fields/' . $field['type'] . '-field.php', array( 'key' => $field['name'], 'field' => $field ) );
+					}
+					else {
+					?>
+						<input name="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
+					<?php } ?>
+					</td>
 			</tr>
 			<?php
 		}
@@ -155,12 +175,29 @@ class WP_Job_Manager_Taxonomy_Meta {
 		$fields = wpjm_job_listing_category_options();
 
 		foreach($fields as $field) {
-			$value = get_term_meta( $term->term_id, $field['id'], true );
+			$value = get_term_meta( $term->term_id, $field['name'], true );
+
 			?>
-			<div class="form-field term-group">
-			<label for="feature-group"><?php esc_html_e( $field['name'], 'wp-job-manager' ); ?></label>
-			<input name="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['id'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="20">
-			</div>
+			<style>
+				img {
+					max-width: 200px;
+					max-height: 200px;
+				}
+			</style>
+			<tr class="form-field term-group-wrap">
+				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['label'], 'wp-job-manager' ); ?></label></th>
+				<td>
+				<?php
+					if($field['type'] == 'file') {
+						$field['value'] = $value;
+						get_job_manager_template( 'form-fields/' . $field['type'] . '-field.php', array( 'key' => $field['name'], 'field' => $field ) );
+					}
+					else {
+					?>
+						<input name="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
+					<?php } ?>
+					</td>
+			</tr>
 			<?php
 		}
 	}

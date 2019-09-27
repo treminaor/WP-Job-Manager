@@ -856,7 +856,11 @@ function the_company_logo( $size = 'thumbnail', $default = null, $post = null ) 
 function get_the_company_logo( $post = null, $size = 'thumbnail' ) {
 	$post = get_post( $post );
 
-	if ( has_post_thumbnail( $post->ID ) ) {
+	if( wpjm_category_as_company_enabled() ) {
+		$attachment_id = wpjm_job_listing_category_company_meta('company_logo', $post);
+		$src = wp_get_attachment_image_src( $attachment_id, $size );
+		return $src ? $src[0] : '';
+	} else if ( has_post_thumbnail( $post->ID ) ) {
 		$src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), $size );
 		return $src ? $src[0] : '';
 	} elseif ( ! empty( $post->_company_logo ) ) {

@@ -874,6 +874,53 @@ function wpjm_use_standard_password_setup_email() {
 	return apply_filters( 'wpjm_use_standard_password_setup_email', $use_standard_password_setup_email );
 }
 
+function create_attachment_from_url( $attachment_url, $parent_id, $title = '' ) {
+	include_once ABSPATH . 'wp-admin/includes/image.php';
+	include_once ABSPATH . 'wp-admin/includes/media.php';
+
+	$upload_dir     = wp_upload_dir();
+	$attachment_url = esc_url( $attachment_url, array( 'http', 'https' ) );
+	if ( empty( $attachment_url ) ) {
+		return 0;
+	}
+
+	$attachment_url_parts = wp_parse_url( $attachment_url );
+
+	// Relative paths aren't allowed.
+	if ( false !== strpos( $attachment_url_parts['path'], '../' ) ) {
+		return 0;
+	}
+
+	$attachment_url = sprintf( '%s://%s%s', $attachment_url_parts['scheme'], $attachment_url_parts['host'], $attachment_url_parts['path'] );
+
+	$attachment_url = str_replace( array( $upload_dir['baseurl'], WP_CONTENT_URL, site_url( '/' ) ), array( $upload_dir['basedir'], WP_CONTENT_DIR, ABSPATH ), $attachment_url );
+	if ( empty( $attachment_url ) || ! is_string( $attachment_url ) ) {
+		return 0;
+	}
+
+	$attachment = array(
+		'post_title'   => $title,
+		'post_content' => '',
+		'post_status'  => 'inherit',
+		'post_parent'  => $parent_id,
+		'guid'         => $attachment_url,
+	);
+
+	$info = wp_check_filetype( $attachment_url );
+	if ( $info ) {
+		$attachment['post_mime_type'] = $info['type'];
+	}
+
+	$attachment_id = wp_insert_attachment( $attachment, $attachment_url, $parent_id );
+
+	if ( ! is_wp_error( $attachment_id ) ) {
+		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $attachment_url ) );
+		return $attachment_id;
+	}
+
+	return 0;
+}
+
 /**
  * Checks if enable categories as companies option is enabled. If categories themselves are not enabled then the setting is ignored.
  *
@@ -932,7 +979,7 @@ function wpjm_job_listing_category_get_company_data($term) {
 	$data = array();
 
 	foreach($fields as $field) {
-		$data[$field['id']] = get_term_meta( $term->term_id, $field['id'], true );		
+		$data[$field['name']] = get_term_meta( $term->term_id, $field['name'], true );		
 	}
 
 	return $data;
@@ -949,24 +996,35 @@ function wpjm_job_listing_category_options() {
 	$fields = 
 		array(
 			array(
-				'name' 	=> 'Company Name', 
-				'id' 	=> "company_name"
+				'label' => 'Company Name', 
+				'name' 	=> 'company_name',
+				'type' 	=> 'text',
 			),
 			array(
-				'name' 	=> 'Company Tagline', 
-				'id' 	=> "company_tagline"
+				'label' => 'Company Tagline', 
+				'name' 	=> 'company_tagline',
+				'type' 	=> 'text',
 			),
 			array(
-				'name' 	=> 'Company Twitter', 
-				'id' 	=> "company_twitter"
+				'label' => 'Company Twitter', 
+				'name' 	=> 'company_twitter',
+				'type' 	=> 'text',
 			),
 			array(
-				'name' 	=> 'Company Video', 
-				'id' 	=> "company_video"
+				'label' => 'Company Video', 
+				'name' 	=> 'company_video',
+				'type' 	=> 'text',
 			),
 			array(
-				'name' 	=> 'Company Website', 
-				'id' 	=> "company_website"
+				'label' => 'Company Website', 
+				'name' 	=> 'company_website',
+				'type' 	=> 'text',
+			),
+			array(
+				'label' => 'Company Logo', 
+				'name' 	=> 'company_logo',
+				'type' 	=> 'file',
+				'ajax'	=> true,
 			)
 		);
 
@@ -975,7 +1033,7 @@ function wpjm_job_listing_category_options() {
 	 *
 	 * @since 1.28.0
 	 *
-	 * @param array List of employment types { string $key => string $label }.
+	 * @param array 
 	 */
 	return apply_filters( 'wpjm_job_listing_category_options', $fields );
 }

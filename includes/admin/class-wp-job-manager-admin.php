@@ -87,6 +87,7 @@ class WP_Job_Manager_Admin {
 	 */
 	public function admin_enqueue_scripts() {
 		WP_Job_Manager::register_select2_assets();
+
 		$screen = get_current_screen();
 		if ( in_array( $screen->id, apply_filters( 'job_manager_admin_screen_ids', array( 'edit-job_listing', 'plugins', 'job_listing', 'job_listing_page_job-manager-settings', 'job_listing_page_job-manager-addons' ) ), true ) ) {
 			wp_enqueue_style( 'jquery-ui' );
@@ -95,16 +96,6 @@ class WP_Job_Manager_Admin {
 			wp_register_script( 'jquery-tiptip', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-tiptip/jquery.tipTip.min.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_datepicker_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/datepicker.min.js', array( 'jquery', 'jquery-ui-datepicker' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_admin_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/admin.min.js', array( 'jquery', 'jquery-tiptip', 'select2' ), JOB_MANAGER_VERSION, true );
-			
-			wp_enqueue_script( 'wp-job-manager-company-data-admin', JOB_MANAGER_PLUGIN_URL . '/assets/js/company-data-admin.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
-
-			$ajax_url         = WP_Job_Manager_Ajax::get_endpoint();
-			$ajax_data        = array(
-				'ajax_url'                => $ajax_url,
-			);
-
-			wp_localize_script( 'wp-job-manager-company-data-admin', 'job_manager_ajax_company_data', $ajax_data );
-
 
 			wp_localize_script(
 				'job_manager_admin_js',
@@ -132,8 +123,47 @@ class WP_Job_Manager_Admin {
 						'date_format' => _x( 'yy-mm-dd', 'Date format for jQuery datepicker.', 'wp-job-manager' ),
 					)
 				);
-			}
+			}	
 		}
+
+		if ( job_manager_user_can_upload_file_via_ajax() ) {
+			wp_register_script( 'jquery-iframe-transport', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-fileupload/jquery.iframe-transport.js', array( 'jquery' ), '9.30.0', true );
+			wp_register_script( 'jquery-fileupload', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-fileupload/jquery.fileupload.js', array( 'jquery', 'jquery-iframe-transport', 'jquery-ui-widget' ), '9.30.0', true );
+			wp_register_script( 'wp-job-manager-ajax-file-upload', JOB_MANAGER_PLUGIN_URL . '/assets/js/ajax-file-upload.min.js', array( 'jquery', 'jquery-fileupload' ), JOB_MANAGER_VERSION, true );
+
+			ob_start();
+			get_job_manager_template(
+				'form-fields/uploaded-file-html.php',
+				array(
+					'name'      => '',
+					'value'     => '',
+					'extension' => 'jpg',
+				)
+			);
+			$js_field_html_img = ob_get_clean();
+
+			ob_start();
+			get_job_manager_template(
+				'form-fields/uploaded-file-html.php',
+				array(
+					'name'      => '',
+					'value'     => '',
+					'extension' => 'zip',
+				)
+			);
+			$js_field_html = ob_get_clean();
+
+			wp_localize_script(
+				'wp-job-manager-ajax-file-upload',
+				'job_manager_ajax_file_upload',
+				array(
+					'ajax_url'               => WP_Job_Manager_Ajax::get_endpoint(),
+					'js_field_html_img'      => esc_js( str_replace( "\n", '', $js_field_html_img ) ),
+					'js_field_html'          => esc_js( str_replace( "\n", '', $js_field_html ) ),
+					'i18n_invalid_file_type' => esc_html__( 'Invalid file type. Accepted types:', 'wp-job-manager' ),
+				)
+			);
+		} 
 
 		wp_enqueue_style( 'job_manager_admin_menu_css', JOB_MANAGER_PLUGIN_URL . '/assets/css/menu.css', array(), JOB_MANAGER_VERSION );
 	}
