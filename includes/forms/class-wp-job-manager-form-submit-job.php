@@ -336,6 +336,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 	 * @throws Exception Uploaded file is not a valid mime-type or other validation error.
 	 */
 	protected function validate_fields( $values ) {
+		error_log(print_r($values, true));
 		foreach ( $this->fields as $group_key => $group_fields ) {
 			foreach ( $group_fields as $key => $field ) {
 				if ( $field['required'] && empty( $values[ $group_key ][ $key ] ) ) {

@@ -15,11 +15,11 @@ jQuery(document).ready(function($) {
 						result.data = data;
 						$.each(result, function(k, v) {
 						    if(v === false) {
-						    	$( '#' + k ).prop("disabled", false);
+						    	$( '#' + k ).prop("readonly", false); 
 						    	$( '#' + k ).val("");
 						    }
 						    else {
-						    	$( '#' + k ).prop("disabled", true); 
+						    	$( '#' + k ).prop("readonly", true); 
 						    	$( '#' + k ).val(v);
 						    }
 						});
