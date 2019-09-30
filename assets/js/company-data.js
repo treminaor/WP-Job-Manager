@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
-	// Listen for changes to the category field 
-	$( '#job_category' ).on( 'select2:select select2:unselect', function() {
+
+	function autofillFields() {
 		var data = {
 			category: $( '#job_category' ).val(),
 		};
@@ -46,5 +46,12 @@ jQuery(document).ready(function($) {
 				},
 			},
 		});
+	};
+
+	autofillFields();
+	
+	// Listen for changes to the category field 
+	$( '#job_category' ).on( 'select2:select select2:unselect', function() {
+		autofillFields();
 	});
 });
