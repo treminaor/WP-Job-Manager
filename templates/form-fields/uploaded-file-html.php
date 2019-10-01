@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	if ( is_numeric( $value ) ) {
 		$image_src = wp_get_attachment_image_src( absint( $value ) );
+		?><img src="<?php echo esc_url( $image_src[0] ); ?>" /> <?php
 		$image_src = $image_src ? $image_src[0] : '';
 	} else {
 		$image_src = $value;

@@ -979,7 +979,10 @@ function wpjm_job_listing_category_get_company_data($term) {
 	$data = array();
 
 	foreach($fields as $field) {
-		$data[$field['name']] = get_term_meta( $term->term_id, $field['name'], true );		
+		$data[$field['name']] = get_term_meta( $term->term_id, $field['name'], true );
+		if($field['type'] == 'file') {
+			$data[$field['name'] . '_src'] = wp_get_attachment_image_src( $data[$field['name']], 'thumbnail' )[0];
+		}	
 	}
 
 	return $data;

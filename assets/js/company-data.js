@@ -14,13 +14,33 @@ jQuery(document).ready(function($) {
 					try {
 						result.data = data;
 						$.each(result, function(k, v) {
-						    if(v === false) {
+							if(k == 'company_logo_src') {
+								if(v) {
+									if( $( '.job-manager-uploaded-file-preview' ).children( 'img' ).length ) {
+										$( '.job-manager-uploaded-file-preview' ).children( 'img' ).prop('src', v);
+									} else {
+										$( '.job-manager-uploaded-files' ).append( '<div class="job-manager-uploaded-file-preview"><img src="' + v + '"/></div>' );
+									}
+								} else {
+									if( $( '.job-manager-uploaded-file-preview' ).children( 'img' ).length ) {
+										$( '.job-manager-uploaded-file-preview' ).children( 'img' ).remove();
+									}
+								}
+							}
+						    else if(v === false) {
 						    	$( '#' + k ).prop("readonly", false); 
-						    	$( '#' + k ).val("");
-						    }
-						    else {
+						    	if( !$( '#' + k ).is( 'input[type=file]' ) ) {
+						    		$( '#' + k ).val("");
+						    	} else {
+						    		$( '#' + k ).prop("disabled", false); 
+						    	}
+						    } else {
 						    	$( '#' + k ).prop("readonly", true); 
-						    	$( '#' + k ).val(v);
+						    	if( !$( '#' + k ).is( 'input[type=file]' ) ) {
+							    	$( '#' + k ).val(v);
+							    } else {
+							    	$( '#' + k ).prop("disabled", true); 
+							    }
 						    }
 						});
 						
