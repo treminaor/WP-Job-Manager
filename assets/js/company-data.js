@@ -15,16 +15,11 @@ jQuery(document).ready(function($) {
 						result.data = data;
 						$.each(result, function(k, v) {
 							if(k == 'company_logo_src') {
+								if( $( '.job-manager-uploaded-file' ).length ) {
+										$( '.job-manager-uploaded-file' ).remove();
+									} 
 								if(v) {
-									if( $( '.job-manager-uploaded-file-preview' ).children( 'img' ).length ) {
-										$( '.job-manager-uploaded-file-preview' ).children( 'img' ).prop('src', v);
-									} else {
-										$( '.job-manager-uploaded-files' ).append( '<div class="job-manager-uploaded-file-preview"><img src="' + v + '"/></div>' );
-									}
-								} else {
-									if( $( '.job-manager-uploaded-file-preview' ).children( 'img' ).length ) {
-										$( '.job-manager-uploaded-file-preview' ).children( 'img' ).remove();
-									}
+									$( '.job-manager-uploaded-files' ).append( '<div class="job-manager-uploaded-file"><div class="job-manager-uploaded-file-preview"><img src="' + v + '"/></div></div' );
 								}
 							}
 						    else if(v === false) {

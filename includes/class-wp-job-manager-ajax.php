@@ -287,16 +287,22 @@ class WP_Job_Manager_Ajax {
 		}
 
 		$category = $_REQUEST['category'];
+		$found_a_company = false;
 
 		if ( is_array( $_REQUEST['category'] ) ) {
 			foreach($_REQUEST['category'] as $cat_id) {
-				if(wpjm_job_listing_category_is_a_company(get_term($cat_id)))
+				if(wpjm_job_listing_category_is_a_company(get_term($cat_id))) {
 					$category = $cat_id;
+					$found_a_company = true;
+				}
 			}
 		}
 
 		$term = get_term($category);
 		$result = wpjm_job_listing_category_get_company_data($term);
+
+		if(!$found_a_company)
+			$result = null;
 
 		wp_send_json( $result );
 	}

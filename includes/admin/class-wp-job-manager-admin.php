@@ -96,6 +96,12 @@ class WP_Job_Manager_Admin {
 			wp_register_script( 'jquery-tiptip', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-tiptip/jquery.tipTip.min.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_datepicker_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/datepicker.min.js', array( 'jquery', 'jquery-ui-datepicker' ), JOB_MANAGER_VERSION, true );
 			wp_enqueue_script( 'job_manager_admin_js', JOB_MANAGER_PLUGIN_URL . '/assets/js/admin.min.js', array( 'jquery', 'jquery-tiptip', 'select2' ), JOB_MANAGER_VERSION, true );
+			wp_enqueue_script( 'wp-job-manager-company-data-admin', JOB_MANAGER_PLUGIN_URL . '/assets/js/company-data-admin.js', array( 'jquery' ), JOB_MANAGER_VERSION, true );
+			
+			$ajax_data        = array(
+				'ajax_url'                => WP_Job_Manager_Ajax::get_endpoint(),
+			);
+			wp_localize_script( 'wp-job-manager-company-data-admin', 'job_manager_ajax_company_data', $ajax_data );
 
 			wp_localize_script(
 				'job_manager_admin_js',
