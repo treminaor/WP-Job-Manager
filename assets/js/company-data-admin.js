@@ -1,9 +1,11 @@
 jQuery(document).ready(function($) {
-	// Listen for changes to the category field 
-	$( 'body' ).on("change", ".editor-post-taxonomies__hierarchical-terms-input", function(event) {
+
+	function autofillFields(event) {
 		var data = {
 			category: (event.target.id.substr(41, event.target.id.length)),
 		};
+
+		console.log("category id: " + (event.target.id.substr(41, event.target.id.length)));
 
 		$.ajax( {
 			type: 'POST',
@@ -13,13 +15,14 @@ jQuery(document).ready(function($) {
 				if ( result ) {
 					try {
 						result.data = data;
+						console.log(result);
 						$.each(result, function(k, v) {
 						    if(!event.target.checked) {
-						    	$( '#_' + k ).prop("disabled", false);
+						    	$( '#_' + k ).prop("readonly", false);
 						    	$( '#_' + k ).val("");
 						    }
 						    else {
-						    	$( '#_' + k ).prop("disabled", true); 
+						    	$( '#_' + k ).prop("readonly", true); 
 						    	$( '#_' + k ).val(v);
 						    }
 						});
@@ -30,6 +33,8 @@ jQuery(document).ready(function($) {
 						}
 					}
 				}
+				else
+					console.log('ajax returned null result');
 			},
 			error: function( jqXHR, textStatus, error ) {
 				if ( window.console && 'abort' !== textStatus ) {
@@ -46,5 +51,13 @@ jQuery(document).ready(function($) {
 				},
 			},
 		});
+	}
+
+	var termsListClass = 'editor-post-taxonomies__hierarchical-terms-input';
+
+	// Listen for changes to the category field 
+	$(document.body).on('change', '.editor-post-taxonomies__hierarchical-terms-input[type=checkbox]', function(event) {
+		console.log(event);
+		autofillFields(event);
 	});
 });
