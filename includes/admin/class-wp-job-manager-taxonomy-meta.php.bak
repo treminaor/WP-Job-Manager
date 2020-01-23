@@ -118,41 +118,6 @@ class WP_Job_Manager_Taxonomy_Meta {
 	}
 
 	/**
-	 * Add the option to select schema.org company fields for job category on the edit meta field form.
-	 *
-	 * @param WP_Term $term     Term object.
-	 * @param string  $taxonomy Taxonomy slug.
-	 */
-	public function display_schema_org_category_fields( $term, $taxonomy ) {
-
-		echo '<style> .term-description-wrap, .term-slug-wrap { display: none; }</style>';
-		echo '<style> img { max-width: 200px; max-height: 200px; } </style>';
-
-		$fields = wpjm_job_listing_category_options();
-
-		foreach($fields as $field) {
-			$value = get_term_meta( $term->term_id, $field['name'], true );
-			?>
-			
-			<tr class="form-field term-group-wrap">
-				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['label'], 'wp-job-manager' ); ?></label></th>
-				<td>
-				<?php
-					if($field['type'] == 'file') {
-						$field['value'] = $value;
-						get_job_manager_template( 'form-fields/' . $field['type'] . '-field.php', array( 'key' => $field['name'], 'field' => $field ) );
-					}
-					else {
-					?>
-						<input name="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
-					<?php } ?>
-					</td>
-			</tr>
-			<?php
-		}
-	}
-
-	/**
 	 * Add the option to select schema.org employmentType for job type on the edit meta field form.
 	 *
 	 * @param WP_Term $term     Term object.
@@ -172,41 +137,6 @@ class WP_Job_Manager_Taxonomy_Meta {
 						<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $current_employment_type, $key ); ?>><?php echo esc_html( $employment_type ); ?></option>
 					<?php endforeach; ?>
 				</select></td>
-			</tr>
-			<?php
-		}
-	}
-
-	/**
-	 * Add the option to select schema.org company fields for job type on the add meta field form.
-	 *
-	 * @param string $taxonomy Taxonomy slug.
-	 */
-	public function add_form_display_schema_org_company_fields( $taxonomy ) {
-		$fields = wpjm_job_listing_category_options();
-
-		echo '<style> .term-description-wrap, .term-slug-wrap { display: none; }</style>';
-		echo '<style> img { max-width: 200px; max-height: 200px; } </style>';
-
-		echo '<script> jQuery(\'#parent\').val(14662);</script>';
-
-		foreach($fields as $field) {
-			$value = get_term_meta( $term->term_id, $field['name'], true );
-			?>
-			
-			<tr class="form-field term-group-wrap">
-				<th scope="row"><label for="feature-group"><?php esc_html_e( $field['label'], 'wp-job-manager' ); ?></label></th>
-				<td>
-				<?php
-					if($field['type'] == 'file') {
-						$field['value'] = $value;
-						get_job_manager_template( 'form-fields/' . $field['type'] . '-field.php', array( 'key' => $field['name'], 'field' => $field ) );
-					}
-					else {
-					?>
-						<input name="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" id="<?php esc_html_e( $field['name'], 'wp-job-manager' ); ?>" type="text" value="<?php echo $value; ?>" size="40">
-					<?php } ?>
-					</td>
 			</tr>
 			<?php
 		}

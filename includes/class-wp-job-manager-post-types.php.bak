@@ -225,7 +225,7 @@ class WP_Job_Manager_Post_Types {
 							'type'              => 'string',
 							'single'            => true,
 							'description'       => esc_html__( $field['name'], 'wp-job-manager' ),
-							'sanitize_callback' => (isset($field['callback']) ? [ $this, $field['callback'] ] : ''),
+							'sanitize_callback' => (isset($field['callback']) ? array( $this, $field['callback'] ) : ''),
 						]
 					);
 				}

@@ -1,7 +1,0 @@
-assets/build
-node_modules
-tmp/
-assets/js/jquery-*
-assets/js/select2
-assets/font
-vendor/

@@ -70,7 +70,6 @@ class WP_Job_Manager_Data_Cleaner {
 		'job_manager_hide_expired',
 		'job_manager_hide_expired_content',
 		'job_manager_enable_categories',
-		'job_manager_enable_categories_as_companies',
 		'job_manager_enable_default_category_multiselect',
 		'job_manager_category_filter_type',
 		'job_manager_enable_types',
